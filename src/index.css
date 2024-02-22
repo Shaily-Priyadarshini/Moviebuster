@@ -48,6 +48,10 @@ body {
   gap: 2.4rem;
   justify-content: center;
 }
+.box::-webkit-scrollbar,.list::-webkit-scrollbar{
+  display: none;
+  scroll-behavior: smooth;
+}
 
 .box {
   width: 42rem;
@@ -56,6 +60,7 @@ body {
   border-radius: 0.9rem;
   overflow: scroll;
   position: relative;
+  
 }
 
 .loader {
