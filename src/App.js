@@ -53,11 +53,35 @@ const key="e0a114ba";
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
+  const [isLoading,setLoading]=useState(false);
+  const [error,setError]=useState('');
+  const query='dnjsk'
 
   useEffect(function(){
-    fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=jab+we+met`)
-.then((response)=>response.json())
-.then((data)=>setMovies((movies)=>data.Search));},[]);
+    async function fetchMovies(){
+      try
+      {setLoading(true)
+      const response= await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=${query}`);
+      if (!response.ok) throw new Error ("Something went wrong with fetching movies");
+      const data = await response.json();
+      if (data.Response==='False') throw new Error ("Movie not found");
+      console.log(data)
+      setMovies(data.Search); 
+      }
+      catch(err){
+        console.error(err.message);
+        setError(err.message);
+      }
+      finally{
+        setLoading(false);
+      }
+
+    }
+    fetchMovies();
+//     fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=jab+we+met`)
+// .then((response)=>response.json())
+// .then((data)=>setMovies((movies)=>data.Search));
+},[]);
   return (
     <>
       <Navbar>
@@ -65,7 +89,7 @@ export default function App() {
         <Search />
         <NumResults movies={movies} />
       </Navbar>
-      <Main movies={movies}/>
+      <Main movies={movies} isLoading={isLoading} error={error} />
     </>
   );
 }
@@ -100,18 +124,28 @@ function Search() {
 function NumResults({movies}) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies?.length}</strong> results
     </p>
   );
 }
-function Main({movies}) {
+function Main({movies,isLoading,error}) {
   return (
     <main className="main">
-      <MovieList movies={movies}/>
+      {isLoading && <Loader />}
+      {!isLoading && !error && <MovieList movies={movies}/>}
+      {error && <ErrorMessage message={error} />}
       <WatchList />
     </main>
   );
 }
+function Loader(){
+  return <p className="loader">Loading...</p>
+}
+
+function ErrorMessage({message}){
+  return <p className="error"><span>⛔ {message}</span></p>
+}
+
 function MovieList({movies}) {
   
   const [isOpen1, setIsOpen1] = useState(true);
@@ -120,7 +154,7 @@ function MovieList({movies}) {
       <button
         className="btn-toggle"
         onClick={() => setIsOpen1((open) => !open)}
-      >
+      > 
         {isOpen1 ? "–" : "+"}
       </button>
       {isOpen1 && (
