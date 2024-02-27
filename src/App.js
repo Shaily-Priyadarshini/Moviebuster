@@ -55,12 +55,14 @@ export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [isLoading,setLoading]=useState(false);
   const [error,setError]=useState('');
-  const query='dnjsk'
+  const [query, setQuery] = useState("");
+  const [selecteMoviedId, setSelectedMovieId]="tt0118983";
 
   useEffect(function(){
     async function fetchMovies(){
       try
-      {setLoading(true)
+      {setLoading(true);
+      setError('');
       const response= await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=${query}`);
       if (!response.ok) throw new Error ("Something went wrong with fetching movies");
       const data = await response.json();
@@ -77,16 +79,21 @@ export default function App() {
       }
 
     }
+    if (query.length<3){
+      setMovies([]);
+      setError('');
+      return
+    }
     fetchMovies();
 //     fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=jab+we+met`)
 // .then((response)=>response.json())
 // .then((data)=>setMovies((movies)=>data.Search));
-},[]);
+},[query]);
   return (
     <>
       <Navbar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
       <Main movies={movies} isLoading={isLoading} error={error} />
@@ -109,8 +116,8 @@ function Logo() {
     </div>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query,setQuery}) {
+  
   return (
     <input
       className="search"
@@ -158,7 +165,7 @@ function MovieList({movies}) {
         {isOpen1 ? "–" : "+"}
       </button>
       {isOpen1 && (
-        <ul className="list">
+        <ul className="list list-movies">
           {movies?.map((movie) => (
             <li key={movie.imdbID}>
               <img src={movie.Poster} alt={`${movie.Title} poster`} />
@@ -175,6 +182,12 @@ function MovieList({movies}) {
       )}
     </div>
   );
+}
+
+function MovieDetails({selecteMoviedId}){
+  return <div>
+    <p>{selecteMoviedId}</p>
+  </div>
 }
 function WatchList() {
   const [watched, setWatched] = useState(tempWatchedData);
