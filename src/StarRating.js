@@ -13,7 +13,7 @@ const starContainerStyle={
 };
 
 
-export default function StarRating({maxRating=5, color='#fcc419' , size=48}){
+export default function StarRating({maxRating=5, color='#fcc419' , size=48, onSetRating,}){
     const [rate,setRating]=useState(0);
     const [temprate, setTempRating]=useState(0);
     const textStyle={
@@ -26,6 +26,7 @@ export default function StarRating({maxRating=5, color='#fcc419' , size=48}){
     function handleRating(count){
         
         setRating(count);
+        onSetRating(count);
 
     };
     function handleHover(count){
