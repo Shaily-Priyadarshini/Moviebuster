@@ -38,7 +38,8 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selecteMoviedId, setSelectedMovieId]=useState(null);
   const [watched, setWatched]= useState([]);
-  // const [watched, setWatched]= useState(function(){
+
+   // const [watched, setWatched]= useState(function(){
   //   const storeValue=localStorage.getItem('watched');
   //   return JSON.parse(storeValue);
   // });
@@ -65,6 +66,7 @@ export default function App() {
   //   localStorage.setItem("watched",JSON.stringify(watched));
   // },
   // [watched]);
+
 
   useEffect(function(){
     const controller=new AbortController();
@@ -268,6 +270,13 @@ function MovieDetails({selecteMoviedId,onCloseMovie, onAddToWatchList,watched}){
   const [movie,setMovie]=useState({});
   const [isLoading,setIsLoading]=useState(false);
   const [userRating, setUserRating]=useState('');
+  const countRating = useRef (0);
+
+  useEffect(function(){
+    if(userRating){
+      countRating.current++;
+    }
+  },[userRating])
   const isWatched=watched.map((movie)=>movie.imdbID).includes(selecteMoviedId);
   const watchedUserRating=watched.find((movie)=>movie.imdbID===selecteMoviedId)?.userRating;
   const{
@@ -292,7 +301,8 @@ function MovieDetails({selecteMoviedId,onCloseMovie, onAddToWatchList,watched}){
       poster,
       imdbRating:Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
-      userRating
+      userRating,
+      countRating
 
     }
 
